@@ -18,6 +18,7 @@ export default class EthAccount extends React.Component {
       address: "N/A",
       balance: 0,
       hasError: false,
+      errorMsg: "",
       isLoading: false,
       notInstalledMetaMask: notInstalled
     }
@@ -25,10 +26,6 @@ export default class EthAccount extends React.Component {
 
   componentWillMount() {
     const {acidx} = this.props
-    if(!this.state.notInstalledMetaMask) {
-      let account = web3.eth.accounts[this.state.accountIndex];
-      this.setState({address: account})
-    }
   }
 
   async fetchAccount() {
@@ -37,14 +34,19 @@ export default class EthAccount extends React.Component {
       hasError: false
     })
     try {
-      let res = await web3.eth.getBalancePromise(this.state.address)
+      let account = await web3.eth.accounts[this.state.accountIndex];
+      let res = await web3.eth.getBalancePromise(account)
       this.setState({
         isLoading: false,
+        address: account,
         balance: res.toNumber()
       })
     } catch (e) {
       this.setState({hasError: true})
       console.error(e)
+      this.setState({
+        errorMsg: e.toString()
+      })
     }
   }
 
@@ -58,7 +60,7 @@ export default class EthAccount extends React.Component {
     if (this.state.notInstalledMetaMask) {
       return <p>No web3? You should consider trying <a href="https://metamask.io/">MetaMask</a>!</p>
     } else if (this.state.hasError) {
-      return <p>error</p>
+      return <p>{this.state.errorMsg}: {this.state.address}</p>
     } else if (this.state.isLoading) {
       return <p>loading....</p>
     } else {
