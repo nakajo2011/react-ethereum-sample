@@ -39,3 +39,5 @@ export function promisify(web3) {
     })
   })
 }
+
+export const delay = time => new Promise(res=>setTimeout(()=>res(),time));

@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "build": "node_modules/.bin/parcel build app/index.html --out-dir docs/ --public-url ./ --no-cache",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",

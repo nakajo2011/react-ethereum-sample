@@ -1,5 +1,5 @@
 import React from 'react'
-import {promisify} from './util'
+import {promisify, delay} from './util'
 
 export default class EthAccount extends React.Component {
 
@@ -14,6 +14,7 @@ export default class EthAccount extends React.Component {
 
     // ステートオブジェクト
     this.state = {
+      reconnect: 0,
       accountIndex: this.props.acidx,
       address: "N/A",
       balance: 0,
@@ -25,34 +26,47 @@ export default class EthAccount extends React.Component {
   }
 
   componentWillMount() {
+    console.log("willMount: acidx=", this.props.acidx)
     const {acidx} = this.props
+
+    if (!this.state.notInstalledMetaMask) {
+      this.setState({
+        isLoading: true,
+        hasError: false
+      })
+      this.fetchAccount()
+    }
   }
 
   async fetchAccount() {
-    this.setState({
-      isLoading: true,
-      hasError: false
-    })
     try {
-      let account = await web3.eth.accounts[this.state.accountIndex];
-      let res = await web3.eth.getBalancePromise(account)
-      this.setState({
-        isLoading: false,
-        address: account,
-        balance: res.toNumber()
-      })
+      let account = await web3.eth.accounts[this.state.accountIndex]
+      if (account == undefined) {
+        console.log("reconecting.... ", this.state.reconnect)
+        if(this.state.reconnect < 10) {
+          this.setState({
+            reconnect: this.state.reconnect + 1
+          })
+          await delay(1000)
+          this.fetchAccount()
+        } else {
+          throw "do not get address."
+        }
+      } else {
+        console.log(account)
+        let res = await web3.eth.getBalancePromise(account)
+        this.setState({
+          isLoading: false,
+          address: account,
+          balance: res.toNumber()
+        })
+      }
     } catch (e) {
       this.setState({hasError: true})
       console.error(e)
       this.setState({
         errorMsg: e.toString()
       })
-    }
-  }
-
-  componentDidMount() {
-    if (!this.state.notInstalledMetaMask) {
-      this.fetchAccount()
     }
   }
 
