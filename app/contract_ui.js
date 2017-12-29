@@ -40,7 +40,6 @@ export default class ContractUI extends React.Component {
       const abi = JSON.parse(ReactDOM.findDOMNode(this.refs.abiCode).value)
       const address = ReactDOM.findDOMNode(this.refs.contractAddress).value
       const obj = web3.eth.contract(abi).at(address)
-      console.log("contract", obj)
       this.setState({
         contract: obj
       })
@@ -87,7 +86,7 @@ export default class ContractUI extends React.Component {
                 <FormControl componentClass="textarea"
                              placeholder="input abi code"
                              ref="abiCode"
-                             defaultValue={JSON.stringify(chacoinif.abi)}/>
+                             defaultValue={""}/>
                 <FormControl.Feedback/>
                 {this.getAlert()}
               </FormGroup>
