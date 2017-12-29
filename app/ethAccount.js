@@ -1,5 +1,5 @@
 import React from 'react'
-import {promisify, delay} from './util'
+import {promisifyWeb3, delay} from './util'
 
 export default class EthAccount extends React.Component {
 
@@ -9,7 +9,7 @@ export default class EthAccount extends React.Component {
     // Checking if Web3 has been injected by the browser (Mist/MetaMask)
     if (typeof web3 !== 'undefined') {
       notInstalled = false
-      promisify(web3)
+      promisifyWeb3(web3)
     }
 
     // ステートオブジェクト
@@ -43,7 +43,7 @@ export default class EthAccount extends React.Component {
       let account = await web3.eth.accounts[this.state.accountIndex]
       if (account == undefined) {
         console.log("reconecting.... ", this.state.reconnect)
-        if(this.state.reconnect < 10) {
+        if (this.state.reconnect < 10) {
           this.setState({
             reconnect: this.state.reconnect + 1
           })
@@ -62,9 +62,8 @@ export default class EthAccount extends React.Component {
         })
       }
     } catch (e) {
-      this.setState({hasError: true})
-      console.error(e)
       this.setState({
+        hasError: true,
         errorMsg: e.toString()
       })
     }

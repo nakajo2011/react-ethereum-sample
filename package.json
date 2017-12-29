@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "start": "node_modules/.bin/parcel app/index.html",
     "build": "node_modules/.bin/parcel build app/index.html --out-dir docs/ --public-url ./ --no-cache",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -14,7 +15,9 @@
     "babel-loader": "^7.1.2",
     "babel-plugin-transform-react-jsx": "^6.24.1",
     "parcel-bundler": "^1.2.0",
+    "prop-types": "^15.6.0",
     "react": "^16.2.0",
+    "react-bootstrap": "^0.31.5",
     "react-dom": "^16.2.0"
   }
 }
