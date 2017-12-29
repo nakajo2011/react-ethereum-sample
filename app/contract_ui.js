@@ -3,7 +3,6 @@ import ReactDOM from 'react-dom'
 import {promisifyWeb3} from './util'
 import {Alert, Button, ControlLabel, FormControl, FormGroup, Panel} from 'react-bootstrap'
 import FunctionCaller from './function_caller'
-import chacoinif from './ChaoCoin.json'
 
 export default class ContractUI extends React.Component {
   constructor(props) {
