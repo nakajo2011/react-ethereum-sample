@@ -55,10 +55,8 @@ export default class FunctionCaller extends React.Component {
     try {
       const func = this.state.contract[this.state.functionAbi.name]
       let result, args = undefined
-      if (this.inputArgs.value.length > 0) {
-        args = this.inputArgs.value.split(",").map((s) => s.trim())
-      }
-      if(args) {
+        args = JSON.parse("["+this.inputArgs.value+"]")
+      if(args.length > 0) {
         result = await promisefy(func, ...args)
       } else {
         result = await promisefy(func)

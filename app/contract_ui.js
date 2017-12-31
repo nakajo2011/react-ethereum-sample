@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom'
 import {promisifyWeb3} from './util'
 import {Alert, Button, ControlLabel, FormControl, FormGroup, Panel} from 'react-bootstrap'
 import FunctionCaller from './function_caller'
+import sampleJson from './SumToLength.json'
 
 export default class ContractUI extends React.Component {
   constructor(props) {
@@ -57,6 +58,9 @@ export default class ContractUI extends React.Component {
   }
 
   componentDidMount() {
+    // サンプル用のabiとaddressをロード
+    ReactDOM.findDOMNode(this.refs.abiCode).value = JSON.stringify(sampleJson.abi)
+    ReactDOM.findDOMNode(this.refs.contractAddress).value = sampleJson.networks[3].address
   }
 
   // show json parse error message
