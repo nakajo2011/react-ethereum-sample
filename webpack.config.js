@@ -1,31 +1,40 @@
 const path = require('path')
 const UglifyJSPlugin = require('uglifyjs-webpack-plugin');
+const CleanWebpackPlugin = require('clean-webpack-plugin');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+const webpack = require('webpack');
 
 module.exports = {
-  entry: path.resolve(__dirname, './app/index.js'), // エントリポイントのjsxファイル
+  entry: ['babel-polyfill', path.resolve(__dirname, './app/index.js')], // エントリポイントのjsxファイル
   output: {
-    path: path.resolve(__dirname, './app/'),
-    filename: 'bundle.js' // 出力するファイル
+    path: path.resolve(__dirname, './docs/'),
+    filename: 'bundle.[chunkhash].js' // 出力するファイル
   },
   plugins: [
-    // new UglifyJSPlugin()
+    new UglifyJSPlugin(),
+    new CleanWebpackPlugin(['docs/bundle.*']),
+    new HtmlWebpackPlugin({
+      template: 'app/index.html'
+    })
   ],
 
   module: {
-    loaders: [{
-      loader: 'babel-loader', // babel-loaderを使って変換する
-      exclude: /node_modules/, // node_modulesフォルダ配下は除外
+    rules: [{
       test: /\.js[x]?$/, // 拡張子がjs or jsxで
-      query: {
-        cacheDirectory: false,
-        plugins: [
-          "babel-plugin-transform-react-jsx"
-        ] // babelのtransform-react-jsxプラグインを使ってjsxを変換
-      }
+      exclude: /node_modules/, // node_modulesフォルダ配下は除外
+      use: [{
+        loader: 'babel-loader', // babel-loaderを使って変換する
+        options: {
+          presets: [
+            ["babel-preset-env"],
+            ["babel-preset-react"]
+          ] // babelのtransform-react-jsxプラグインを使ってjsxを変換
+        }
+      }]
     }]
   },
   devServer: {
-    contentBase: path.resolve(__dirname, './app'),
+    contentBase: path.resolve(__dirname, './docs'),
     port: 3000,
   },
 };
