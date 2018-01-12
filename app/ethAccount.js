@@ -1,5 +1,5 @@
 import React from 'react'
-import {promisifyWeb3, delay} from './util'
+import {delay} from './util'
 import Web3 from 'web3'
 
 let eth = {}
@@ -8,10 +8,8 @@ export default class EthAccount extends React.Component {
     super(props)
     let notInstalled = true;
     // Checking if Web3 has been injected by the browser (Mist/MetaMask)
-    // let eth = {}
     if (typeof web3 !== 'undefined') {
       notInstalled = false
-      // promisifyWeb3(web3)
       const web310 = new Web3(web3.currentProvider)
       eth = web310.eth
     }
@@ -45,7 +43,7 @@ export default class EthAccount extends React.Component {
   async fetchAccount() {
     try {
       let accounts = await eth.getAccounts()
-      if (accounts == undefined) {
+      if (accounts === undefined) {
         console.log("reconecting.... ", this.state.reconnect)
         if (this.state.reconnect < 10) {
           this.setState({

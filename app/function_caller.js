@@ -1,16 +1,16 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import ReactDOM from 'react-dom'
-import {promisefy} from './util'
 import {Button, Col, FormControl, FormGroup, InputGroup, Label, Row} from 'react-bootstrap'
 
 const ropstenEtherScanURL = "https://ropsten.etherscan.io/tx/"
+const waitMessage = "wait apply sendTransaction ...."
 // Contractのfunctionを実行するコンポーネント
 export default class FunctionCaller extends React.Component {
   constructor(props) {
     super(props)
     // ステートオブジェクト
-    const args = this.props.functionAbi.inputs.map((v) => v.type).join(",")
+    const args = this.props.functionAbi.inputs.map((v) => v.name + ":" + v.type).join(", ")
     const label = this.props.functionAbi.name + `(${args})`
     this.state = {
       contract: this.props.contract,
@@ -21,6 +21,7 @@ export default class FunctionCaller extends React.Component {
       args: args,
       label: label,
       result: "",
+      error: false,
       show: true
     }
 
@@ -53,22 +54,38 @@ export default class FunctionCaller extends React.Component {
   // contractのメソッドを実行します。
   async exec() {
     try {
-      const func = this.state.contract[this.state.functionAbi.name]
-      let result, args = undefined
-        args = JSON.parse("["+this.inputArgs.value+"]")
-      if(args.length > 0) {
-        result = await promisefy(func, ...args)
+      const func = this.state.contract.methods[this.state.functionAbi.name]
+      let callMethod, result, args = undefined
+      args = JSON.parse("[" + this.inputArgs.value + "]")
+      if (args.length > 0) {
+        callMethod = await func(...args)
       } else {
-        result = await promisefy(func)
+        callMethod = await func()
       }
-      this.setState({
-        result: result.toString()
-      })
+      if (this.props.functionAbi.constant) {
+        result = await callMethod.call()
+        console.log(result)
+        this.setState({
+          result: result.toString()
+        })
+      } else {
+        this.setState({
+          result: waitMessage,
+          error: false
+        })
+        await callMethod.send()
+            .on('transactionHash', txhash => {
+              this.setState({
+                result: txhash
+              })
+            })
+      }
     } catch (e) {
       console.error(e)
       let errorMsg = (<span style={{color: "red"}}>{e.message}</span>)
       this.setState({
-        result: errorMsg
+        result: errorMsg,
+        error: true
       })
     }
   }
@@ -79,9 +96,9 @@ export default class FunctionCaller extends React.Component {
     let toggleLabel = this.state.show ? " hide" : " show"
 
     let result = this.state.result
-    if(!this.state.functionAbi.constant) {
+    if (!this.state.error && !this.state.functionAbi.constant && this.state.result !== waitMessage) {
       //convert to ether scan link
-      result = (<a href={ropstenEtherScanURL+this.state.result} target="_blank">{this.state.result}</a>)
+      result = (<a href={ropstenEtherScanURL + this.state.result} target="_blank">{this.state.result}</a>)
     }
     return (
         <FormGroup>
