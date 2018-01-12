@@ -4,20 +4,25 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "node_modules/.bin/parcel app/index.html",
-    "build": "node_modules/.bin/parcel build app/index.html --out-dir docs/ --public-url ./ --no-cache",
+    "start": "node_modules/.bin/webpack-dev-server",
+    "build": "node_modules/.bin/webpack & node_modules/.bin/uglifyjs -c -o docs/bundle.min.js -- app/bundle.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "babel-core": "^6.26.0",
-    "babel-loader": "^7.1.2",
-    "babel-plugin-transform-react-jsx": "^6.24.1",
-    "parcel-bundler": "^1.2.0",
     "prop-types": "^15.6.0",
     "react": "^16.2.0",
     "react-bootstrap": "^0.31.5",
-    "react-dom": "^16.2.0"
+    "react-dom": "^16.2.0",
+    "web3": "^1.0.0-beta.27"
+  },
+  "devDependencies": {
+    "babel-core": "^6.26.0",
+    "babel-loader": "^7.1.2",
+    "babel-plugin-transform-react-jsx": "^6.24.1",
+    "uglifyjs-webpack-plugin": "^1.1.6",
+    "webpack": "^3.10.0",
+    "webpack-dev-server": "^2.10.1"
   }
 }

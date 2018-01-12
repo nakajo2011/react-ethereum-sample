@@ -1,15 +1,19 @@
 import React from 'react'
 import {promisifyWeb3, delay} from './util'
+import Web3 from 'web3'
 
+let eth = {}
 export default class EthAccount extends React.Component {
-
   constructor(props) {
     super(props)
     let notInstalled = true;
     // Checking if Web3 has been injected by the browser (Mist/MetaMask)
+    // let eth = {}
     if (typeof web3 !== 'undefined') {
       notInstalled = false
-      promisifyWeb3(web3)
+      // promisifyWeb3(web3)
+      const web310 = new Web3(web3.currentProvider)
+      eth = web310.eth
     }
 
     // ステートオブジェクト
@@ -40,8 +44,8 @@ export default class EthAccount extends React.Component {
 
   async fetchAccount() {
     try {
-      let account = await web3.eth.accounts[this.state.accountIndex]
-      if (account == undefined) {
+      let accounts = await eth.getAccounts()
+      if (accounts == undefined) {
         console.log("reconecting.... ", this.state.reconnect)
         if (this.state.reconnect < 10) {
           this.setState({
@@ -53,12 +57,13 @@ export default class EthAccount extends React.Component {
           throw "do not get address."
         }
       } else {
+        const account = accounts[this.state.accountIndex]
         console.log(account)
-        let res = await web3.eth.getBalancePromise(account)
+        let res = await eth.getBalance(account)
         this.setState({
           isLoading: false,
           address: account,
-          balance: res.toNumber()
+          balance: res
         })
       }
     } catch (e) {
